@@ -671,6 +671,43 @@ func (r *ComponentBuildReconciler) ensureWebhookSecret(ctx context.Context, comp
 	return webhookSecretString, nil
 }
 
+func (r *ComponentBuildReconciler) tryMigratePaCSecret(ctx context.Context, component *appstudiov1alpha1.Component) bool {
+	oldPacSecret := corev1.Secret{}
+	if err := r.Client.Get(ctx, types.NamespacedName{Namespace: component.Namespace, Name: gitopsprepare.PipelinesAsCodeSecretName}, &oldPacSecret); err != nil {
+		if errors.IsNotFound(err) {
+			return false
+		}
+		r.EventRecorder.Event(&oldPacSecret, "Warning", "ErrorReadingPaCSecret", err.Error())
+		return false
+	}
+
+	sourceUrl := component.Spec.Source.GitSource.URL
+	url, err := url.Parse(sourceUrl)
+	if err != nil {
+		r.EventRecorder.Event(&oldPacSecret, "Warning", "ErrorParsingURL", err.Error())
+		return false
+	}
+
+	scmName := strings.Split(url.Hostname(), ".")[0]
+	newPaCSecret := &corev1.Secret{
+		TypeMeta: oldPacSecret.TypeMeta,
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      component.Name + "-pac-secret",
+			Namespace: component.Namespace,
+			Labels: map[string]string{
+				scmCredentialsSecretLabel: "scm",
+				scmSecretHostnameLabel:    url.Hostname(),
+			},
+		},
+		Data: map[string][]byte{"password": oldPacSecret.Data[scmName+".token"]},
+	}
+	if err := r.Client.Create(ctx, newPaCSecret); err != nil {
+		r.EventRecorder.Event(newPaCSecret, "Warning", "ErrorCreatingPaCSecret", err.Error())
+		return false
+	}
+	return true
+}
+
 // generatePaCWebhookSecretString generates string alike openssl rand -hex 20
 func generatePaCWebhookSecretString() string {
 	length := 20 // in bytes

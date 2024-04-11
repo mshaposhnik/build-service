@@ -471,11 +471,16 @@ func (r *ComponentBuildReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 
 		pacBuildStatus := &PaCBuildStatus{}
 		if mergeUrl, err := r.ProvisionPaCForComponent(ctx, &component); err != nil {
-			if boErr, ok := err.(*boerrors.BuildOpError); ok && boErr.IsPersistent() {
+			boErr, ok := err.(*boerrors.BuildOpError)
+			if ok && boErr.IsPersistent() {
 				log.Error(err, "Pipelines as Code provision for the Component failed")
 				pacBuildStatus.State = "error"
 				pacBuildStatus.ErrId = boErr.GetErrorId()
 				pacBuildStatus.ErrMessage = boErr.ShortError()
+			} else if ok && boErr.GetErrorId() == int(boerrors.EPaCSecretNotFound) {
+				if r.tryMigratePaCSecret(ctx, &component) {
+					return ctrl.Result{Requeue: true}, nil
+				}
 			} else {
 				// transient error, retry
 				log.Error(err, "Pipelines as Code provision transient error")
