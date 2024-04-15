@@ -385,8 +385,7 @@ func (r *ComponentBuildReconciler) Reconcile(ctx context.Context, req ctrl.Reque
 
 		pacBuildStatus := &PaCBuildStatus{}
 		if mergeUrl, err := r.ProvisionPaCForComponent(ctx, &component); err != nil {
-			boErr, ok := err.(*boerrors.BuildOpError)
-			if ok && boErr.IsPersistent() {
+			if boErr, ok := err.(*boerrors.BuildOpError); ok && boErr.IsPersistent() {
 				log.Error(err, "Pipelines as Code provision for the Component failed")
 				pacBuildStatus.State = "error"
 				pacBuildStatus.ErrId = boErr.GetErrorId()
