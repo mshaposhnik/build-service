@@ -12,7 +12,6 @@ require (
 	github.com/onsi/gomega v1.29.0
 	github.com/openshift/api v0.0.0-20221013123534-96eec44e1979
 	github.com/prometheus/client_golang v1.17.0
-	github.com/redhat-appstudio/application-service/cdq-analysis v0.0.0
 	github.com/xanzy/go-gitlab v0.88.0
 	go.uber.org/zap v1.26.0
 	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa
@@ -31,6 +30,7 @@ require (
 require (
 	github.com/devfile/alizer v1.2.2-0.20231004141146-f36141673c7f // indirect
 	github.com/distribution/distribution/v3 v3.0.0-20211118083504-a29a3c99a684 // indirect
+	github.com/redhat-appstudio/application-service/cdq-analysis v0.0.0 //indirect
 )
 
 // If you update dependencies below you must also update controllers/suite_test.go
@@ -203,7 +203,8 @@ require (
 	k8s.io/component-base v0.28.3 // indirect
 	k8s.io/klog v1.0.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20231113174909-778a5567bc1e // indirect
-	k8s.io/utils v0.0.0-20230726121419-3b25d923346b
+	k8s.io/pod-security-admission v0.26.10 // indirect
+	k8s.io/utils v0.0.0-20230726121419-3b25d923346b // indirect
 	oras.land/oras-go v1.1.0 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
