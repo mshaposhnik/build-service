@@ -30,7 +30,7 @@ require (
 require (
 	github.com/devfile/alizer v1.2.2-0.20231004141146-f36141673c7f // indirect
 	github.com/distribution/distribution/v3 v3.0.0-20211118083504-a29a3c99a684 // indirect
-	github.com/redhat-appstudio/application-service/cdq-analysis v0.0.0 //indirect
+	github.com/redhat-appstudio/application-service/cdq-analysis v0.0.0 // indirect
 )
 
 // If you update dependencies below you must also update controllers/suite_test.go
